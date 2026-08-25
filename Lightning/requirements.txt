@@ -1,0 +1,8 @@
+# LIGHTNING Website Defense & IDS System
+# Created by NEXO-TECH BY ALEXANDER
+
+# Optional dependencies for enhanced terminal rendering and network utilities
+# (The core tool operates completely with Python 3 standard library as well)
+colorama>=0.4.6
+requests>=2.31.0
+urllib3>=2.0.0

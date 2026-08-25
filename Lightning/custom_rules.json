@@ -1,0 +1,11 @@
+{
+    "description": "LIGHTNING Custom Zero-Day Rules - Add your custom regex patterns here for zero-downtime hot-reloading",
+    "rules": [
+        {
+            "name": "Custom Admin Token Probe",
+            "pattern": "(?i)secret_internal_debug_key",
+            "severity": "HIGH",
+            "description": "Probing custom internal debug parameters"
+        }
+    ]
+}
