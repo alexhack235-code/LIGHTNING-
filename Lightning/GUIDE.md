@@ -188,6 +188,46 @@ The Web SOC Dashboard is protected by a session-based login system (`core/dashbo
 
 ---
 
+### 📱 Running LIGHTNING on Termux (Android Mobile SOC)
+
+LIGHTNING is engineered with **zero external heavy dependencies** (100% Python standard library), making it run natively and smoothly on **Android via Termux** as a portable mobile SOC command center!
+
+#### 1. Setup in Termux:
+```bash
+# Update packages and install Python & Git
+pkg update && pkg install python git -y
+
+# Navigate to your Lightning folder
+cd Lightning
+
+# Optional: Keep Termux CPU active in background
+termux-wake-lock
+```
+
+#### 2. Start LIGHTNING in Termux:
+```bash
+# Launch the Master Autonomous Defense Engine
+python main.py
+```
+*(Press `Enter` to select Option `[1]` All-in-One Engine)*
+
+#### 3. Accessing the Web SOC Dashboard on Android:
+- **On your Android Device (Phone / Tablet)**:
+  Open Chrome, Kiwi Browser, or Firefox and go to:
+  👉 **`http://127.0.0.1:8888`** *(or `http://localhost:8888`)*
+  - **Login**: `admin` / `lightning`
+  
+- **From your PC or another device on the same Wi-Fi**:
+  1. In Termux, check your phone's IP: `ifconfig` (look for `wlan0` inet e.g., `192.168.1.45`)
+  2. Open your PC browser and navigate to:
+     👉 **`http://192.168.1.45:8888`**
+
+#### 4. WAF Proxy Gateway on Android:
+- Your WAF reverse proxy listens on `http://127.0.0.1:8080` (or `http://0.0.0.0:8080`).
+- Route any local web apps or remote traffic through port `8080` to protect them!
+
+---
+
 ### Automated 13-Module Unit Test Suite
 To verify the entire defense stack:
 ```bash

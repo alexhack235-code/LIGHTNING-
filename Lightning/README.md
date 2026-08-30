@@ -42,6 +42,14 @@ python main.py
 When started, LIGHTNING **automatically launches Google Chrome / your default browser** and opens:
 👉 **`http://127.0.0.1:8888`**
 
+### 📱 Termux (Android Mobile SOC) Support
+LIGHTNING runs natively on Android via **Termux** with zero external dependencies:
+```bash
+pkg update && pkg install python git -y
+python main.py
+```
+Open **`http://127.0.0.1:8888`** on your phone's browser (or access remotely via your phone's Wi-Fi IP).
+
 ---
 
 ## 🛡️ The Full Defense Stack
