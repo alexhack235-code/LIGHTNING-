@@ -66,7 +66,7 @@ def print_banner():
 ██║     ██║██║   ██║██╔══██║   ██║   ██║╚██╗██║██║██║╚██╗██║██║   ██║
 ███████╗██║╚██████╔╝██║  ██║   ██║   ██║ ╚████║██║██║ ╚████║╚██████╔╝
 ╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝ {C.RESET}
-{C.YELLOW}{C.BOLD}  ⚡ REAL-TIME WEBSITE DEFENSE, WAF SHIELD & INTRUSION DETECTION SYSTEM ⚡{C.RESET}
+{C.YELLOW}{C.BOLD}  [*] REAL-TIME WEBSITE DEFENSE, WAF SHIELD & INTRUSION DETECTION SYSTEM [*]{C.RESET}
 {C.PURPLE}{C.BOLD}            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C.RESET}
 {C.WHITE}{C.BOLD}                [+] CREATED BY NEXO-TECH BY ALEXANDER [+]{C.RESET}
 {C.PURPLE}{C.BOLD}            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C.RESET}
@@ -80,7 +80,7 @@ def print_header(title: str):
     C = Colors
     line = "━" * (len(title) + 8)
     print(f"\n{C.CYAN}{C.BOLD}┏{line}┓{C.RESET}")
-    print(f"{C.CYAN}{C.BOLD}┃   ⚡ {title}   ┃{C.RESET}")
+    print(f"{C.CYAN}{C.BOLD}┃   [*] {title}   ┃{C.RESET}")
     print(f"{C.CYAN}{C.BOLD}┗{line}┛{C.RESET}\n")
 
 

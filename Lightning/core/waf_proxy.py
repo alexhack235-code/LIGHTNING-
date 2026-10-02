@@ -307,7 +307,8 @@ class WAFProxyHandler(BaseHTTPRequestHandler):
 
         # 8. Virtual Patching & Zero-Day Exploit Check (Log4Shell, Spring4Shell, CVEs)
         if self.virtual_patch:
-            cve_threat = self.virtual_patch.inspect_cve(self.path + " " + body_str)
+            headers_summary = " ".join([f"{k}: {v}" for k, v in self.headers.items()])
+            cve_threat = self.virtual_patch.inspect_cve(self.path + " " + headers_summary + " " + body_str)
             if cve_threat:
                 cat, desc, sev, snip = cve_threat
                 self._block_request(client_ip, cat, desc, sev, snip)
@@ -328,9 +329,22 @@ class WAFProxyHandler(BaseHTTPRequestHandler):
             self._block_request(client_ip, cat, desc, sev, snip)
             return False
 
-        # 11. Request Headers Threat Check
+        # 11. Request Headers & Cookie Deep Inspection
         for h_name, h_val in self.headers.items():
-            if h_name.lower() in ("user-agent", "host", "authorization", "cookie"):
+            h_lower = h_name.lower()
+            if h_lower == "host":
+                continue
+            if h_lower == "cookie":
+                for piece in h_val.split(";"):
+                    if "=" in piece:
+                        c_name, c_val = piece.strip().split("=", 1)
+                        if c_name.strip() == COOKIE_NAME:
+                            continue
+                        c_threat = inspect_text(c_val)
+                        if c_threat:
+                            cat, desc, sev, snip = c_threat
+                            self._block_request(client_ip, cat, f"Cookie [{c_name}]: {desc}", sev, snip)
+                            return False
                 continue
             h_threat = inspect_text(h_val)
             if h_threat:

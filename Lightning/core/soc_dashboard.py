@@ -710,12 +710,19 @@ SOC_HTML_TEMPLATE = """<!DOCTYPE html>
             </span>
             <button class="attack-btn-pill" onclick="simulateAttack('log4shell')">Log4Shell (CVE-2021-44228)</button>
             <button class="attack-btn-pill" onclick="simulateAttack('spring4shell')">Spring4Shell</button>
+            <button class="attack-btn-pill" onclick="simulateAttack('struts')">Apache Struts2</button>
             <button class="attack-btn-pill" onclick="simulateAttack('sqli')">SQL Injection</button>
             <button class="attack-btn-pill" onclick="simulateAttack('xss')">Cross-Site Scripting</button>
             <button class="attack-btn-pill" onclick="simulateAttack('rce')">Command Injection (RCE)</button>
+            <button class="attack-btn-pill" onclick="simulateAttack('xxe')">XXE Injection</button>
+            <button class="attack-btn-pill" onclick="simulateAttack('ssti')">SSTI Template</button>
+            <button class="attack-btn-pill" onclick="simulateAttack('proto')">Prototype Pollution</button>
+            <button class="attack-btn-pill" onclick="simulateAttack('crlf')">CRLF Splitting</button>
             <button class="attack-btn-pill" onclick="simulateAttack('webshell')">Web Shell Upload</button>
+            <button class="attack-btn-pill" onclick="simulateAttack('polyglot')">Polyglot Shell</button>
             <button class="attack-btn-pill" onclick="simulateAttack('honeypot')">Honeypot Probe</button>
             <button class="attack-btn-pill" onclick="simulateAttack('lfi')">Path Traversal (LFI)</button>
+            <button class="attack-btn-pill" onclick="simulateAttack('env')">Env File Probe</button>
         </div>
     </div>
 
@@ -1528,6 +1535,48 @@ class SOCHandler(BaseHTTPRequestHandler):
                     "path": "/download?file=../../../../etc/passwd",
                     "cat": "Path Traversal / LFI",
                     "desc": "Sensitive operating system file traversal dropped"
+                },
+                "xxe": {
+                    "ip": "185.190.140.12",
+                    "path": "/api/xml/upload (XXE Entity Injection)",
+                    "cat": "XML External Entity (XXE)",
+                    "desc": "XML external entity declaration intercepted"
+                },
+                "ssti": {
+                    "ip": "94.102.61.15",
+                    "path": "/profile?name={{7*7}} (Template Injection)",
+                    "cat": "Server-Side Template Injection (SSTI)",
+                    "desc": "Jinja2/Twig dynamic expression evaluated and dropped"
+                },
+                "proto": {
+                    "ip": "185.244.25.178",
+                    "path": "/api/settings (__proto__ Pollution)",
+                    "cat": "Prototype Pollution",
+                    "desc": "Object prototype property manipulation blocked"
+                },
+                "crlf": {
+                    "ip": "194.87.139.99",
+                    "path": "/redirect?url=http://trusted.com%0d%0aSet-Cookie:admin=1",
+                    "cat": "CRLF Injection / HTTP Response Splitting",
+                    "desc": "HTTP response header injection dropped"
+                },
+                "struts": {
+                    "ip": "178.62.204.111",
+                    "path": "/orders.action (Apache Struts OGNL)",
+                    "cat": "Zero-Day Exploit (Apache Struts)",
+                    "desc": "CVE-2017-5638 OGNL remote execution intercepted"
+                },
+                "polyglot": {
+                    "ip": "45.133.1.80",
+                    "path": "/uploads/photo.jpg (JPEG Polyglot Web Shell)",
+                    "cat": "Malware & Web Shell Upload",
+                    "desc": "Valid image header with embedded PHP script dropped"
+                },
+                "env": {
+                    "ip": "195.154.60.22",
+                    "path": "/.env (Environment Credentials)",
+                    "cat": "Sensitive File & Environment Reconnaissance",
+                    "desc": "Attempted extraction of cloud secrets and keys blocked"
                 }
             }
 

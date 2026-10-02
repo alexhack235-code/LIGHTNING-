@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.db
+*.log
+.DS_Store
+lightning_data.db
+lightning_security.log

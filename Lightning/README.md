@@ -25,7 +25,8 @@
 | **2. Persistent SQLite Database** | `core/persistence.py` | Stores threat incidents, quarantine ban records, and historical metrics across system reboots in `lightning_data.db`. |
 | **3. Live Global Threat Feeds** | `core/threat_feeds.py` | Auto-syncs with 5+ public threat intelligence feeds (FireHOL, EmergingThreats, Blocklist.de) with over 10,000+ known bad IPs. |
 | **4. Web SOC Authentication Guard**| `core/dashboard_auth.py`| Protects the live Web SOC Command Center with session cookies and a cyberpunk-styled login interface. |
-| **5. 13-Module Unit Test Suite** | `tests/test_lightning.py`| Automated test suite verifying rules, zero-days, webshells, anti-bot, geo-fencing, heuristic scoring, and crypto authentication. |
+| **5. Zero-Weakness Security Scanner** | `core/scanner.py` | Full multi-vector audit engine: 40+ ports, 10+ defensive HTTP headers, SSL/TLS cert chain, cookie security, CORS, and HTTP method policy. |
+| **6. 14-Module Automated Test Suite** | `tests/test_lightning.py`| Automated test suite verifying 63 comprehensive unit tests across all 14 defense modules with 100% pass rate. |
 
 ---
 
@@ -86,7 +87,7 @@ LIGHTNING includes a cryptographic **Premium VIP Tier** equipped with the **BRUT
 ---
 
 ## 🧪 Running Automated Unit Tests
-To verify all 13 modules and run the full test suite:
+To verify all 14 defense modules and execute the full test suite (63 unit tests):
 ```bash
 python tests/test_lightning.py
 # or select option [T] in main.py
@@ -95,7 +96,7 @@ python tests/test_lightning.py
 ---
 
 ## 🎮 Penetration Testing & Attack Simulator
-Test 13+ exploit vectors against your shield:
+Test 20+ multi-vector exploits (SQLi, XSS, RCE, LFI, XXE, SSTI, Prototype Pollution, CRLF, Struts, Polyglot Web Shells) against your shield:
 ```bash
 python simulate_attacks.py
 # or select option [8] in main.py

